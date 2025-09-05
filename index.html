@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Попскойн - Статистика за первый месяц</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            border-radius: 20px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #00ffff;
+            font-weight: 300;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+        }
+        
+        .stat-card h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #00ffff;
+            text-align: center;
+        }
+        
+        .achievement-card {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.1));
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .achievement-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .achievement-player {
+            font-weight: 700;
+            color: #ffd700;
+            font-size: 1.1rem;
+        }
+        
+        .achievement-desc {
+            color: #ffffff;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .mvp-section {
+            background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.1));
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            border: 2px solid rgba(255, 0, 255, 0.5);
+            text-align: center;
+        }
+        
+        .mvp-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            color: #ff00ff;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        
+        .mvp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .mvp-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .mvp-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(255, 0, 255, 0.3);
+        }
+        
+        .development-section {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 255, 255, 0.1));
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            border: 2px solid rgba(0, 255, 0, 0.3);
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00ffff);
+            border-radius: 10px;
+            transition: width 2s ease;
+        }
+        
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .plan-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .plan-card.high { border-left-color: #ff0000; }
+        .plan-card.medium { border-left-color: #ffff00; }
+        .plan-card.low { border-left-color: #00ff00; }
+        
+        .plan-card:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .number-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .mechanics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .mechanic-tag {
+            background: linear-gradient(45deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            border-radius: 25px;
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .mechanic-tag:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mvp-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mechanics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .stat-card, .mvp-section, .development-section {
+                padding: 20px;
+            }
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            }
+            to {
+                text-shadow: 0 0 30px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <div class="container">
+        <header class="header fade-in">
+            <h1 class="glow">ПОПСКОЙН</h1>
+            <p class="subtitle">Статистика за первый месяц разработки</p>
+        </header>
+        
+        <div class="mvp-section fade-in">
+            <h2 class="mvp-title">🏆 MVP ИГРОКИ</h2>
+            <div class="mvp-grid">
+                <div class="mvp-card">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">👑 Королева Боссов</h4>
+                    <div style="font-size: 1.2rem; font-weight: 700; color: #00ffff;">Soranami</div>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">Трижды подряд первой убивала боса, зал славы помнит её имя</p>
+                </div>
+                <div class="mvp-card">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">🐾 Покоритель Червя</h4>
+                    <div style="font-size: 1.2rem; font-weight: 700; color: #00ffff;">Лекс🐾</div>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">Первым победил босса 3 локации</p>
+                </div>
+                <div class="mvp-card">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">⚒️ Мастер Заточки</h4>
+                    <div style="font-size: 1.2rem; font-weight: 700; color: #00ffff;">Grey</div>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">Заточил две кирки до +11, недосягаемый результат</p>
+                </div>
+                <div class="mvp-card">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">⚔️ Легенда +13</h4>
+                    <div style="font-size: 1.2rem; font-weight: 700; color: #00ffff;">Toshiro</div>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">Первый заточил предмет до +13 (меч контрабандиста)</p>
+                </div>
+                <div class="mvp-card">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">🎣 Мастер Рыбалки</h4>
+                    <div style="font-size: 1.2rem; font-weight: 700; color: #00ffff;">Camalik</div>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">Первым выловил рецепт таинственного кольца</p>
+                </div>
+                <div class="mvp-card">
+                    <h4 style="color: #ffd700; margin-bottom: 10px;">🏛️ Божества Храма</h4>
+                    <div style="font-size: 1.2rem; font-weight: 700; color: #00ffff;">Soranami & Grey</div>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">Стали божествами в Храме первой локации</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card fade-in">
+                <h3>🎮 Активные Игроки</h3>
+                <div class="number-display" id="playersCount">18</div>
+                <div class="chart-container">
+                    <canvas id="playersChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+            
+            <div class="stat-card fade-in">
+                <h3>🏆 Топ Игроки по Достижениям</h3>
+                <div class="chart-container">
+                    <canvas id="achievementsChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+            
+            <div class="stat-card fade-in">
+                <h3>🗺️ Прогресс Локаций</h3>
+                <div class="chart-container">
+                    <canvas id="locationsChart" width="400" height="200"></canvas>
+                </div>
+                <p style="text-align: center; margin-top: 15px; color: #00ffff;">
+                    3 локации завершены, 4-ая в разработке (40%)
+                </p>
+            </div>
+            
+            <div class="stat-card fade-in">
+                <h3>⚔️ Покорители 3-ей Локации</h3>
+                <div style="text-align: center;">
+                    <div class="number-display">3</div>
+                    <div style="margin: 20px 0;">
+                        <div style="font-size: 1.2rem; color: #ffd700; margin: 10px 0;">🏆 Soranami</div>
+                        <div style="font-size: 1.2rem; color: #ffd700; margin: 10px 0;">🏆 Лекс🐾</div>
+                        <div style="font-size: 1.2rem; color: #ffd700; margin: 10px 0;">🏆 Toshiro</div>
+                    </div>
+                    <p style="color: #00ffff; font-size: 0.9rem;">Каждый использовал уникальный билд</p>
+                </div>
+            </div>
+            
+            <div class="stat-card fade-in">
+                <h3>⚒️ Статистика Заточки</h3>
+                <div class="chart-container">
+                    <canvas id="enchantmentChart" width="400" height="250"></canvas>
+                </div>
+            </div>
+            
+            <div class="stat-card fade-in">
+                <h3>💰 Активность Игроков</h3>
+                <div class="chart-container">
+                    <canvas id="activityChart" width="400" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card fade-in" style="margin: 30px 0;">
+            <h3>🏆 Зал Славы - Детальные Достижения</h3>
+            <div id="achievementsList">
+                <div class="achievement-card">
+                    <div class="achievement-player">Soranami</div>
+                    <div class="achievement-desc">Трижды подряд первой убивала боса, ее имя три раза было вписано в зал славы</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-player">Лекс🐾</div>
+                    <div class="achievement-desc">Первым победил босса 3 локации, Червя</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-player">Grey</div>
+                    <div class="achievement-desc">Сумел заточить две топовые кирки до +11, никто не мог близко подобраться к такому же результату</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-player">Toshiro</div>
+                    <div class="achievement-desc">Первый кто смог заточить предмет до +13, он заточил меч контрабандиста</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-player">Camalik</div>
+                    <div class="achievement-desc">Первым выловил рецепт таинственного кольца</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-player">Soranami & Grey</div>
+                    <div class="achievement-desc">Стали божествами в Храме первой локации</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="development-section fade-in">
+            <h2 style="font-family: 'Orbitron', monospace; font-size: 2rem; color: #00ff00; text-align: center; margin-bottom: 30px;">
+                📈 РАЗВИТИЕ ИГРЫ ЗА МЕСЯЦ
+            </h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>📦 Контент</h3>
+                    <div style="text-align: center;">
+                        <div style="color: #00ffff; font-size: 1.5rem; margin: 10px 0;">105 уникальных предметов</div>
+                        <div style="color: #00ffff; font-size: 1.5rem; margin: 10px 0;">5 маунтов</div>
+                        <div style="color: #00ffff; font-size: 1.5rem; margin: 10px 0;">19 ачивок</div>
+                        <div style="color: #00ffff; font-size: 1.5rem; margin: 10px 0;">10 аватарок</div>
+                        <div style="color: #00ffff; font-size: 1.5rem; margin: 10px 0;">4 подземелья</div>
+                        <div style="color: #00ffff; font-size: 1.5rem; margin: 10px 0;">14 противников</div>
+                        <div style="color: #00ffff; font-size: 1.5rem; margin: 10px 0;">4 магические способности</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>⚙️ Реализованные Механики</h3>
+                    <div class="mechanics-grid">
+                        <div class="mechanic-tag">🎣 Рыбалка</div>
+                        <div class="mechanic-tag">📦 Лутбоксы</div>
+                        <div class="mechanic-tag">⚒️ Заточка</div>
+                        <div class="mechanic-tag">🧪 Реагенты</div>
+                        <div class="mechanic-tag">🔨 Крафт</div>
+                        <div class="mechanic-tag">🐎 Маунты</div>
+                        <div class="mechanic-tag">✨ Способности</div>
+                        <div class="mechanic-tag">⏰ Временные эффекты</div>
+                        <div class="mechanic-tag">🏦 Банк</div>
+                        <div class="mechanic-tag">🏪 Торговая лавка</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>💰 Активность</h3>
+                    <div style="text-align: center;">
+                        <div style="color: #ffd700; font-size: 2rem; margin: 20px 0;">30</div>
+                        <div style="color: #ffffff; margin-bottom: 20px;">транзакций через банк</div>
+                        <div style="color: #ffd700; font-size: 2rem; margin: 20px 0;">20</div>
+                        <div style="color: #ffffff;">отгаданных промокодов</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="development-section fade-in">
+            <h2 style="font-family: 'Orbitron', monospace; font-size: 2rem; color: #ffff00; text-align: center; margin-bottom: 30px;">
+                🚀 ПЛАНЫ РАЗВИТИЯ
+            </h2>
+            
+            <div class="plans-grid">
+                <div class="plan-card high">
+                    <h4 style="color: #ff0000; margin-bottom: 10px;">🏗️ Релиз 4 локации</h4>
+                    <p style="color: #ffffff; margin-bottom: 10px;">Статус: уже скоро</p>
+                    <div style="color: #ff0000; font-weight: 600;">Высокий приоритет</div>
+                </div>
+                
+                <div class="plan-card high">
+                    <h4 style="color: #ff0000; margin-bottom: 10px;">🎰 Механика Казино</h4>
+                    <p style="color: #ffffff; margin-bottom: 10px;">Статус: уже скоро</p>
+                    <div style="color: #ff0000; font-weight: 600;">Высокий приоритет</div>
+                </div>
+                
+                <div class="plan-card high">
+                    <h4 style="color: #ff0000; margin-bottom: 10px;">⚔️ Переработка боевой механики</h4>
+                    <p style="color: #ffffff; margin-bottom: 10px;">ПВП и массовые ПВЕ рейды</p>
+                    <p style="color: #ffffff; margin-bottom: 10px;">Статус: понадобится время</p>
+                    <div style="color: #ff0000; font-weight: 600;">Высокий приоритет</div>
+                </div>
+                
+                <div class="plan-card medium">
+                    <h4 style="color: #ffff00; margin-bottom: 10px;">💨 Распыление</h4>
+                    <p style="color: #ffffff; margin-bottom: 10px;">Статус: скоро</p>
+                    <div style="color: #ffff00; font-weight: 600;">Средний приоритет</div>
+                </div>
+                
+                <div class="plan-card medium">
+                    <h4 style="color: #ffff00; margin-bottom: 10px;">📚 Добавление лора</h4>
+                    <p style="color: #ffffff; margin-bottom: 10px;">Статус: понадобится время</p>
+                    <div style="color: #ffff00; font-weight: 600;">Средний приоритет</div>
+                </div>
+                
+                <div class="plan-card low">
+                    <h4 style="color: #00ff00; margin-bottom: 10px;">📋 Квестовая система</h4>
+                    <p style="color: #ffffff; margin-bottom: 10px;">Статус: понадобится время</p>
+                    <div style="color: #00ff00; font-weight: 600;">Низкий приоритет</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Particles.js configuration
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#00ffff' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: false },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#00ffff', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 6, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                modes: { grab: { distance: 400, line_linked: { opacity: 1 } }, bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 }, repulse: { distance: 200, duration: 0.4 }, push: { particles_nb: 4 }, remove: { particles_nb: 2 } }
+            },
+            retina_detect: true
+        });
+        
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationDelay = '0.2s';
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Animate numbers
+        function animateNumber(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start);
+                }
+            }, 16);
+        }
+        
+        // Add click effects to cards
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.stat-card, .achievement-card, .mvp-card, .plan-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+            
+            // Add hover sound effect simulation
+            const hoverElements = document.querySelectorAll('.stat-card, .mvp-card, .mechanic-tag');
+            hoverElements.forEach(element => {
+                element.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.6)';
+                });
+                element.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                });
+            });
+        });
+        
+        // Initialize charts when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                animateNumber(document.getElementById('playersCount'), 18);
+                initCharts();
+                
+                // Add typing effect to title
+                const title = document.querySelector('.header h1');
+                const text = title.textContent;
+                title.textContent = '';
+                let i = 0;
+                const typeWriter = () => {
+                    if (i < text.length) {
+                        title.textContent += text.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 100);
+                    }
+                };
+                typeWriter();
+            }, 500);
+        });
+        
+        function initCharts() {
+            // Players activity chart
+            const playersCtx = document.getElementById('playersChart').getContext('2d');
+            new Chart(playersCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Активные игроки', 'Неактивные'],
+                    datasets: [{
+                        data: [18, 2],
+                        backgroundColor: ['#00ffff', '#333333'],
+                        borderColor: ['#00ffff', '#666666'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+            
+            // Top players achievements chart
+            const achievementsCtx = document.getElementById('achievementsChart').getContext('2d');
+            new Chart(achievementsCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Убийство боссов', 'Заточка', 'Рыбалка', 'Прохождение локаций', 'Божественность'],
+                    datasets: [
+                        {
+                            label: 'Soranami',
+                            data: [5, 2, 1, 5, 5],
+                            backgroundColor: 'rgba(255, 0, 255, 0.2)',
+                            borderColor: '#ff00ff',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Grey',
+                            data: [2, 5, 2, 3, 5],
+                            backgroundColor: 'rgba(0, 255, 255, 0.2)',
+                            borderColor: '#00ffff',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Toshiro',
+                            data: [3, 5, 2, 5, 3],
+                            backgroundColor: 'rgba(255, 255, 0, 0.2)',
+                            borderColor: '#ffff00',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Лекс🐾',
+                            data: [4, 3, 2, 5, 3],
+                            backgroundColor: 'rgba(255, 165, 0, 0.2)',
+                            borderColor: '#ffa500',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                            pointLabels: { color: '#ffffff' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+            
+            // Locations progress chart
+            const locationsCtx = document.getElementById('locationsChart').getContext('2d');
+            new Chart(locationsCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Локация 1', 'Локация 2', 'Локация 3', 'Локация 4'],
+                    datasets: [{
+                        label: 'Прогресс (%)',
+                        data: [100, 100, 100, 40],
+                        backgroundColor: ['#00ff00', '#00ff00', '#00ff00', '#ffff00'],
+                        borderColor: ['#00ff00', '#00ff00', '#00ff00', '#ffff00'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+            
+            // Enchantment statistics chart
+            const enchantmentCtx = document.getElementById('enchantmentChart').getContext('2d');
+            new Chart(enchantmentCtx, {
+                type: 'line',
+                data: {
+                    labels: ['+1', '+2', '+3', '+4', '+5', '+6', '+7', '+8', '+9', '+10', '+11', '+12', '+13'],
+                    datasets: [{
+                        label: 'Количество заточенных предметов',
+                        data: [50, 45, 40, 35, 30, 25, 20, 15, 10, 8, 2, 1, 1],
+                        backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                        borderColor: '#ffd700',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+            
+            // Player activity chart
+            const activityCtx = document.getElementById('activityChart').getContext('2d');
+            new Chart(activityCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['Банковские транзакции', 'Промокоды', 'Убийства боссов', 'Заточка предметов', 'Рыбалка'],
+                    datasets: [{
+                        data: [30, 20, 15, 85, 25],
+                        backgroundColor: [
+                            'rgba(0, 255, 255, 0.6)',
+                            'rgba(255, 0, 255, 0.6)',
+                            'rgba(255, 255, 0, 0.6)',
+                            'rgba(255, 165, 0, 0.6)',
+                            'rgba(0, 255, 0, 0.6)'
+                        ],
+                        borderColor: [
+                            '#00ffff',
+                            '#ff00ff',
+                            '#ffff00',
+                            '#ffa500',
+                            '#00ff00'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            ticks: { color: '#ffffff' },
+                            grid: { color: 'rgba(255, 255, 255, 0.2)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
