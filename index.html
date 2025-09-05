@@ -4,8 +4,190 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Попскойн - Статистика за первый месяц</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+        // --- Added Top-3 Charts ---
+        function initTop3() {
+            const top3Ctx = document.getElementById('top3Chart').getContext('2d');
+            const ds = {
+                mined: { labels: ['Elvina','Soranami','Grey'], values: [22651,19827,15816], colors: ['#00ffff','#ff00ff','#ffff00'] },
+                popsium: { labels: ['Лекс🐾','Soranami','Grey'], values: [917,773,664], colors: ['#00ffff','#ff00ff','#ffff00'] },
+                enemies: { labels: ['Soranami','Toshiro','Grey'], values: [974,821,737], colors: ['#00ffff','#ff00ff','#ffff00'] },
+                tavern: { labels: ['Soranami','Лекс🐾','Elvina'], values: [2153,1774,1743], colors: ['#00ffff','#ff00ff','#ffff00'] },
+            };
+            
+            const buildDataset = (key) => ({
+                labels: ds[key].labels,
+                datasets: [{
+                    label: 'Значение',
+                    data: ds[key].values,
+                    backgroundColor: ds[key].colors.map(c=>c+'aa'),
+                    borderColor: ds[key].colors,
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            });
+            
+            const chart = new Chart(top3Ctx, {
+                type: 'bar',
+                data: buildDataset('mined'),
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,.1)' } },
+                        x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,.05)' } }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#fff' } },
+                        tooltip: { callbacks: { label: (ctx) => ctx.raw.toLocaleString('ru-RU') } }
+                    }
+                }
+            });
+            
+            const podium = document.getElementById('podiumList');
+            const controls = document.querySelectorAll('.top3-controls .pill-btn');
+            const podiumTemplates = {
+                mined: [
+                    '🥇 Elvina — 22,651',
+                    '🥈 Soranami — 19,827',
+                    '🥉 Grey — 15,816',
+                ],
+                popsium: [
+                    '🥇 Лекс🐾 — 917',
+                    '🥈 Soranami — 773',
+                    '🥉 Grey — 664',
+                ],
+                enemies: [
+                    '🥇 Soranami — 974',
+                    '🥈 Toshiro — 821',
+                    '🥉 Grey — 737',
+                ],
+                tavern: [
+                    '🥇 Soranami — 2,153',
+                    '🥈 Лекс🐾 — 1,774',
+                    '🥉 Elvina — 1,743',
+                ]
+            };
+            
+            const setActive = (el) => {
+                controls.forEach(b=>b.classList.remove('active'));
+                el.classList.add('active');
+            };
+            
+            const renderPodium = (key) => {
+                podium.innerHTML = '';
+                const li = (cls, txt) => {
+                    const e = document.createElement('li'); e.className = cls; e.textContent = txt; return e;
+                };
+                const [g,s,b] = podiumTemplates[key];
+                podium.appendChild(li('g', g));
+                podium.appendChild(li('s', s));
+                podium.appendChild(li('b', b));
+            };
+            
+            controls.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const key = btn.getAttribute('data-cat');
+                    setActive(btn);
+                    chart.data = buildDataset(key);
+                    chart.update();
+                    renderPodium(key);
+                });
+            });
+        }
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js">
+        // --- Added Top-3 Charts ---
+        function initTop3() {
+            const top3Ctx = document.getElementById('top3Chart').getContext('2d');
+            const ds = {
+                mined: { labels: ['Elvina','Soranami','Grey'], values: [22651,19827,15816], colors: ['#00ffff','#ff00ff','#ffff00'] },
+                popsium: { labels: ['Лекс🐾','Soranami','Grey'], values: [917,773,664], colors: ['#00ffff','#ff00ff','#ffff00'] },
+                enemies: { labels: ['Soranami','Toshiro','Grey'], values: [974,821,737], colors: ['#00ffff','#ff00ff','#ffff00'] },
+                tavern: { labels: ['Soranami','Лекс🐾','Elvina'], values: [2153,1774,1743], colors: ['#00ffff','#ff00ff','#ffff00'] },
+            };
+            
+            const buildDataset = (key) => ({
+                labels: ds[key].labels,
+                datasets: [{
+                    label: 'Значение',
+                    data: ds[key].values,
+                    backgroundColor: ds[key].colors.map(c=>c+'aa'),
+                    borderColor: ds[key].colors,
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            });
+            
+            const chart = new Chart(top3Ctx, {
+                type: 'bar',
+                data: buildDataset('mined'),
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,.1)' } },
+                        x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,.05)' } }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#fff' } },
+                        tooltip: { callbacks: { label: (ctx) => ctx.raw.toLocaleString('ru-RU') } }
+                    }
+                }
+            });
+            
+            const podium = document.getElementById('podiumList');
+            const controls = document.querySelectorAll('.top3-controls .pill-btn');
+            const podiumTemplates = {
+                mined: [
+                    '🥇 Elvina — 22,651',
+                    '🥈 Soranami — 19,827',
+                    '🥉 Grey — 15,816',
+                ],
+                popsium: [
+                    '🥇 Лекс🐾 — 917',
+                    '🥈 Soranami — 773',
+                    '🥉 Grey — 664',
+                ],
+                enemies: [
+                    '🥇 Soranami — 974',
+                    '🥈 Toshiro — 821',
+                    '🥉 Grey — 737',
+                ],
+                tavern: [
+                    '🥇 Soranami — 2,153',
+                    '🥈 Лекс🐾 — 1,774',
+                    '🥉 Elvina — 1,743',
+                ]
+            };
+            
+            const setActive = (el) => {
+                controls.forEach(b=>b.classList.remove('active'));
+                el.classList.add('active');
+            };
+            
+            const renderPodium = (key) => {
+                podium.innerHTML = '';
+                const li = (cls, txt) => {
+                    const e = document.createElement('li'); e.className = cls; e.textContent = txt; return e;
+                };
+                const [g,s,b] = podiumTemplates[key];
+                podium.appendChild(li('g', g));
+                podium.appendChild(li('s', s));
+                podium.appendChild(li('b', b));
+            };
+            
+            controls.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const key = btn.getAttribute('data-cat');
+                    setActive(btn);
+                    chart.data = buildDataset(key);
+                    chart.update();
+                    renderPodium(key);
+                });
+            });
+        }
+
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap');
         
@@ -321,6 +503,100 @@
                 text-shadow: 0 0 30px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
             }
         }
+    
+        /* --- Added: Monthly Totals / Leaders / Top-3 styles --- */
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            text-align: center;
+            margin: 10px 0 20px;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0,255,255,0.4);
+        }
+        .totals-section, .leaders-section, .top3-section {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(0,255,255,0.25);
+            margin-bottom: 35px;
+            backdrop-filter: blur(8px);
+        }
+        .totals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 15px;
+        }
+        .total-item {
+            background: linear-gradient(135deg, rgba(0,255,255,0.08), rgba(255,0,255,0.08));
+            border: 1px solid rgba(0,255,255,0.25);
+            border-radius: 14px;
+            padding: 16px;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .total-item:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,255,255,0.18); }
+        .total-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.6rem;
+            color: #00ffff;
+            text-shadow: 0 0 14px rgba(0,255,255,0.5);
+        }
+        .total-label { margin-top: 6px; color: #ffffff; opacity: .9; font-size: .95rem; }
+        
+        .leaders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+            margin-top: 12px;
+        }
+        .leader-item {
+            background: linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,140,0,0.08));
+            border: 1px solid rgba(255,215,0,0.45);
+            border-radius: 14px;
+            padding: 14px 16px;
+        }
+        .leader-item .cat { color: #ffd700; font-weight: 700; margin-bottom: 4px; }
+        .leader-item .who { color: #00ffff; font-weight: 700; }
+        .leader-item .val { color: #fff; opacity:.95; }
+        
+        .top3-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 10px 0 18px;
+        }
+        .pill-btn {
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(0,255,255,0.4);
+            background: linear-gradient(45deg, rgba(0,255,255,0.12), rgba(255,0,255,0.12));
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all .2s ease;
+        }
+        .pill-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,255,255,0.2); }
+        .pill-btn.active {
+            border-color: #00ffff;
+            box-shadow: 0 0 16px rgba(0,255,255,0.6);
+        }
+        .podium-list {
+            list-style: none;
+            margin-top: 12px;
+            display: grid;
+            gap: 6px;
+            justify-items: center;
+        }
+        .podium-list li { font-size: 1rem; }
+        .podium-list .g { color: #ffd700; } /* gold */
+        .podium-list .s { color: #c0c0c0; } /* silver */
+        .podium-list .b { color: #cd7f32; } /* bronze */
+        
+        @media(max-width:768px){
+            .totals-grid{ grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+        }
+
     </style>
 </head>
 <body>
@@ -331,6 +607,121 @@
             <h1 class="glow">ПОПСКОЙН</h1>
             <p class="subtitle">Статистика за первый месяц разработки</p>
         </header>
+
+        <section class="totals-section fade-in">
+            <h2 class="section-title">📊 Итоги месяца (сумма по всем игрокам)</h2>
+            <div class="totals-grid">
+                <div class="total-item"><div class="total-value">105,270</div><div class="total-label">Добыто попскойнов (майн)</div></div>
+                <div class="total-item"><div class="total-value">227,019</div><div class="total-label">Потрачено попскойнов</div></div>
+                <div class="total-item"><div class="total-value">3,506</div><div class="total-label">Получено попсиума</div></div>
+                <div class="total-item"><div class="total-value">5,146</div><div class="total-label">Потрачено попсиума</div></div>
+                <div class="total-item"><div class="total-value">5,678</div><div class="total-label">Расколото залежей</div></div>
+                <div class="total-item"><div class="total-value">2,759</div><div class="total-label">Покупок совершено</div></div>
+                <div class="total-item"><div class="total-value">10,367</div><div class="total-label">Выпито в таверне</div></div>
+                <div class="total-item"><div class="total-value">131</div><div class="total-label">Промокодов использовано</div></div>
+                <div class="total-item"><div class="total-value">2,904</div><div class="total-label">Заточек использовано</div></div>
+                <div class="total-item"><div class="total-value">405</div><div class="total-label">Сломано вещей</div></div>
+                <div class="total-item"><div class="total-value">5,315</div><div class="total-label">Побеждено противников</div></div>
+                <div class="total-item"><div class="total-value">400</div><div class="total-label">Смертей</div></div>
+                <div class="total-item"><div class="total-value">610</div><div class="total-label">Рыбалка</div></div>
+                <div class="total-item"><div class="total-value">10</div><div class="total-label">Скрафчено предметов</div></div>
+            </div>
+        </section>
+
+        <section class="leaders-section fade-in">
+            <h2 class="section-title">🥇 Лидеры по категориям</h2>
+            <div class="leaders-grid">
+                <div class="leader-item">
+                    <div class="cat">Добыто попскойнов</div>
+                    <div class="who">Elvina</div>
+                    <div class="val">22,651</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Потрачено попскойнов</div>
+                    <div class="who">Grey</div>
+                    <div class="val">33,411</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Получено попсиума</div>
+                    <div class="who">Лекс🐾</div>
+                    <div class="val">917</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Потрачено попсиума</div>
+                    <div class="who">Soranami</div>
+                    <div class="val">1,363</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Расколото залежей</div>
+                    <div class="who">Elvina</div>
+                    <div class="val">859</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Покупок совершено</div>
+                    <div class="who">Лекс🐾</div>
+                    <div class="val">528</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Выпито в таверне</div>
+                    <div class="who">Soranami</div>
+                    <div class="val">2,153</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Промокодов использовано</div>
+                    <div class="who">Toshiro / Soranami</div>
+                    <div class="val">19</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Заточек использовано</div>
+                    <div class="who">Лекс🐾</div>
+                    <div class="val">473</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Сломано вещей</div>
+                    <div class="who">Лекс🐾</div>
+                    <div class="val">76</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Побеждено противников</div>
+                    <div class="who">Soranami</div>
+                    <div class="val">974</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Смертей</div>
+                    <div class="who">Toshiro</div>
+                    <div class="val">49</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Рыбалка</div>
+                    <div class="who">Soranami</div>
+                    <div class="val">175</div>
+                </div>
+                <div class="leader-item">
+                    <div class="cat">Скрафчено предметов</div>
+                    <div class="who">Grey</div>
+                    <div class="val">3</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="top3-section stat-card fade-in">
+            <h3>🏅 Топ‑3 по основным категориям</h3>
+            <div class="top3-controls">
+                <button class="pill-btn active" data-cat="mined">Добыто попскойнов</button>
+                <button class="pill-btn" data-cat="popsium">Получено попсиума</button>
+                <button class="pill-btn" data-cat="enemies">Побеждено противников</button>
+                <button class="pill-btn" data-cat="tavern">Выпито в таверне</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="top3Chart" height="280"></canvas>
+            </div>
+            <ul class="podium-list" id="podiumList">
+                <li class="g">🥇 Elvina — 22,651</li>
+                <li class="s">🥈 Soranami — 19,827</li>
+                <li class="b">🥉 Grey — 15,816</li>
+            </ul>
+        </section>
+
         
         <div class="mvp-section fade-in">
             <h2 class="mvp-title">🏆 MVP ИГРОКИ</h2>
@@ -628,7 +1019,7 @@
             setTimeout(() => {
                 animateNumber(document.getElementById('playersCount'), 18);
                 initCharts();
-                
+                initTop3();
                 // Add typing effect to title
                 const title = document.querySelector('.header h1');
                 const text = title.textContent;
@@ -839,6 +1230,97 @@
                 }
             });
         }
+    
+        // --- Added Top-3 Charts ---
+        function initTop3() {
+            const top3Ctx = document.getElementById('top3Chart').getContext('2d');
+            const ds = {
+                mined: { labels: ['Elvina','Soranami','Grey'], values: [22651,19827,15816], colors: ['#00ffff','#ff00ff','#ffff00'] },
+                popsium: { labels: ['Лекс🐾','Soranami','Grey'], values: [917,773,664], colors: ['#00ffff','#ff00ff','#ffff00'] },
+                enemies: { labels: ['Soranami','Toshiro','Grey'], values: [974,821,737], colors: ['#00ffff','#ff00ff','#ffff00'] },
+                tavern: { labels: ['Soranami','Лекс🐾','Elvina'], values: [2153,1774,1743], colors: ['#00ffff','#ff00ff','#ffff00'] },
+            };
+            
+            const buildDataset = (key) => ({
+                labels: ds[key].labels,
+                datasets: [{
+                    label: 'Значение',
+                    data: ds[key].values,
+                    backgroundColor: ds[key].colors.map(c=>c+'aa'),
+                    borderColor: ds[key].colors,
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            });
+            
+            const chart = new Chart(top3Ctx, {
+                type: 'bar',
+                data: buildDataset('mined'),
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,.1)' } },
+                        x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,.05)' } }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#fff' } },
+                        tooltip: { callbacks: { label: (ctx) => ctx.raw.toLocaleString('ru-RU') } }
+                    }
+                }
+            });
+            
+            const podium = document.getElementById('podiumList');
+            const controls = document.querySelectorAll('.top3-controls .pill-btn');
+            const podiumTemplates = {
+                mined: [
+                    '🥇 Elvina — 22,651',
+                    '🥈 Soranami — 19,827',
+                    '🥉 Grey — 15,816',
+                ],
+                popsium: [
+                    '🥇 Лекс🐾 — 917',
+                    '🥈 Soranami — 773',
+                    '🥉 Grey — 664',
+                ],
+                enemies: [
+                    '🥇 Soranami — 974',
+                    '🥈 Toshiro — 821',
+                    '🥉 Grey — 737',
+                ],
+                tavern: [
+                    '🥇 Soranami — 2,153',
+                    '🥈 Лекс🐾 — 1,774',
+                    '🥉 Elvina — 1,743',
+                ]
+            };
+            
+            const setActive = (el) => {
+                controls.forEach(b=>b.classList.remove('active'));
+                el.classList.add('active');
+            };
+            
+            const renderPodium = (key) => {
+                podium.innerHTML = '';
+                const li = (cls, txt) => {
+                    const e = document.createElement('li'); e.className = cls; e.textContent = txt; return e;
+                };
+                const [g,s,b] = podiumTemplates[key];
+                podium.appendChild(li('g', g));
+                podium.appendChild(li('s', s));
+                podium.appendChild(li('b', b));
+            };
+            
+            controls.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const key = btn.getAttribute('data-cat');
+                    setActive(btn);
+                    chart.data = buildDataset(key);
+                    chart.update();
+                    renderPodium(key);
+                });
+            });
+        }
+
     </script>
 </body>
 </html>
